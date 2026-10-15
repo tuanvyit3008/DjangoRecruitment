@@ -1,0 +1,83 @@
+import type { Job } from "./types";
+export const sampleJobs: Job[] = [
+  {
+    id: 1,
+    title: "Frontend Developer (React)",
+    company: "Viettel Digital",
+    location: "Hà Nội",
+    employmentType: "Toàn thời gian",
+    experience: "1-2 năm",
+    salary: "15 - 25 triệu",
+    description:
+      "Xây dựng sản phẩm số phục vụ hàng triệu người dùng. Bạn sẽ làm việc cùng đội ngũ product và engineering giàu kinh nghiệm.",
+    tags: ["React", "TypeScript", "REST API"],
+    postedAt: "2 ngày trước",
+    featured: true,
+  },
+  {
+    id: 2,
+    title: "Backend Developer (Django)",
+    company: "Fintech PTIT",
+    location: "Hà Nội · Hybrid",
+    employmentType: "Toàn thời gian",
+    experience: "Fresher",
+    salary: "12 - 18 triệu",
+    description:
+      "Tham gia phát triển nền tảng tài chính an toàn, có cơ hội học hỏi Django REST Framework và PostgreSQL.",
+    tags: ["Python", "Django", "PostgreSQL"],
+    postedAt: "3 ngày trước",
+    featured: true,
+  },
+  {
+    id: 3,
+    title: "Product Designer",
+    company: "NexTech",
+    location: "TP. Hồ Chí Minh",
+    employmentType: "Toàn thời gian",
+    experience: "2-3 năm",
+    salary: "18 - 28 triệu",
+    description:
+      "Thiết kế trải nghiệm mạch lạc cho các sản phẩm B2B SaaS và đồng hành cùng team trong suốt vòng đời sản phẩm.",
+    tags: ["Figma", "UX Research", "Design System"],
+    postedAt: "5 ngày trước",
+  },
+  {
+    id: 4,
+    title: "Data Analyst Intern",
+    company: "Momo Campus",
+    location: "Hà Nội",
+    employmentType: "Thực tập",
+    experience: "Sinh viên",
+    salary: "Trợ cấp cạnh tranh",
+    description:
+      "Phân tích dữ liệu người dùng và hỗ trợ các quyết định kinh doanh bằng insight rõ ràng, có tác động.",
+    tags: ["SQL", "Python", "Tableau"],
+    postedAt: "1 tuần trước",
+  },
+  {
+    id: 5,
+    title: "QA Engineer",
+    company: "CloudNine",
+    location: "Đà Nẵng · Remote",
+    employmentType: "Toàn thời gian",
+    experience: "1-2 năm",
+    salary: "14 - 22 triệu",
+    description:
+      "Xây dựng chiến lược kiểm thử và đảm bảo chất lượng cho sản phẩm cloud-native.",
+    tags: ["Testing", "Cypress", "CI/CD"],
+    postedAt: "1 tuần trước",
+  },
+  {
+    id: 6,
+    title: "Marketing Executive",
+    company: "EduBridge",
+    location: "Hà Nội",
+    employmentType: "Toàn thời gian",
+    experience: "1 năm",
+    salary: "10 - 16 triệu",
+    description:
+      "Sáng tạo nội dung và chiến dịch thu hút thế hệ sinh viên, người đi làm trẻ.",
+    tags: ["Content", "Growth", "Social"],
+    postedAt: "2 tuần trước",
+  },
+];
