@@ -41,3 +41,7 @@ npm run build
 ```
 
 API mapping và các phần chưa xác minh được ghi trong `docs/API_INTEGRATION.md` và `docs/API_GAPS.md`.
+
+## Cấu trúc repository
+
+Repository này là điểm hợp nhất cho triển khai fullstack. Frontend React nằm ở thư mục gốc; nếu bổ sung Django Backend, nên đặt source Backend trong thư mục riêng như `backend/` để tránh trùng `package.json`, `src/` và cấu hình Vite.
