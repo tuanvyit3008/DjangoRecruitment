@@ -1,11 +1,20 @@
-# API gaps
+# API gaps — 2026-10-25
 
-1. `docs/FRONTEND_INTEGRATION_GUIDE.md`, `docs/API_CONTRACT.md`, `docs/openapi.json`, `docs/BACKEND_FINAL_AUDIT.md`, and `docs/SMOKE_TESTS.md` are absent from this frontend repository.
-2. Backend connectivity is not verified from this environment. A browser error such as `ERR_CONNECTION_REFUSED` means no process is listening at the configured host/port; it is not evidence of a frontend auth failure.
-3. The frontend accepts `access_token`/`refresh_token` aliases defensively, but the expected contract in the supplied prompt uses `access`/`refresh`; this must be confirmed against OpenAPI.
-4. Register currently sends `first_name`, `last_name`, and fixed `role: CANDIDATE`; employer registration UI is not yet exposed because its exact required fields are not verified.
-5. Auth state is restored through `/auth/me/` when a token exists. Network errors are surfaced and do not silently become local login success.
-6. LocalStorage token persistence is a documented client-side XSS risk; no claim is made that it protects JWTs from XSS.
-7. Candidate profile, skills, experience, CV, applications, Employer, Admin, companies, health check, protected routes, and role dashboards remain pending the backend contract.
+1. PENDING_VERIFICATION: no Django source, API_CONTRACT/OpenAPI/serializers, permissions or test accounts locally. Do not invent Candidate/Employer/Admin/companies/CV paths or schema.
+2. LAN health/jobs/schema probes cannot obtain HTTP response from 192.168.1.93:8000. Live auth, CORS, database, JWT signing, blacklist and permission behavior: BLOCKED / NOT VERIFIED.
+3. Auth fields/uppercase roles are now implemented exactly from the user-provided previous mega prompt, not from Backend source. Token aliases removed. Live confirmation still needed.
+4. Jobs view model mapping remains provisional. Strict count/next/previous/results and mandatory job id/title validation fail explicitly. Require actual employment/category/status enums, salary representation, filters, pagination settings before adding further job controls.
+5. Candidate/Employer/Admin and public companies dashboards not implemented. /account displays real current-user information rather than fabricated role dashboards. Frontend role guard foundation exists; no claim of role-specific E2E without real portal routes.
+6. CV constraints and application fields were described earlier but exact URLs/responses/transitions absent; no write/download buttons pretend success.
+7. Browser fixture tests validate frontend behavior against a deliberately separate test-only server. They do not verify Django integration, LAN CORS, owner permissions or production deployment.
+8. No ESLint existing config/script. Unit tests, typecheck, Prettier format check, Next build and browser smoke are the configured gates. No claim that formatting is lint.
 
-When Backend is available: set `VITE_API_BASE_URL`, restart Vite, allow the actual frontend origin in Django CORS, inspect Network responses for auth/jobs, then replace the pending labels with confirmed serializer-derived types.
+## LAN acceptance checklist
+
+- Backend team supplies OpenAPI/contract and starts Django on 0.0.0.0:8000; verify actual LAN IP/firewall.
+- Configure server DJANGO_API_BASE_URL and browser NEXT_PUBLIC_DJANGO_API_BASE_URL including /api/v1 once; rebuild/restart.
+- Open frontend using actual allowed origin (port 5173). Verify CORS preflight with Content-Type and Authorization, without cookies/no-cors.
+- Check jobs list/detail/404 and compare response types; verify role enums and registration request with safe test account.
+- Login -> me -> /account -> reload -> controlled expired-access test -> one refresh -> replace both tokens -> logout 204 -> private route redirects.
+- Confirm network outage retains credentials and shows recoverable error; 403 must not trigger refresh; invalid refresh expires session.
+- Run Candidate/Employer/Admin flows only after implementing schema-confirmed modules. Do not share real JWT/password in reports.

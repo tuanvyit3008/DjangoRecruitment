@@ -7,3 +7,8 @@ dist/
 vite.config.js
 vite.config.d.ts
 .DS_Store
+
+.next/
+.npm-cache/
+coverage/
+.next-e2e/

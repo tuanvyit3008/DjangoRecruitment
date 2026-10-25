@@ -1,30 +1,33 @@
-# API integration
+# API integration — 2026-10-25
 
-## Configuration
+## Evidence levels
 
-Use one Vite variable:
+- CONFIRMED / Verified: hành vi frontend được unit/browser fixture/build xác minh; không đồng nghĩa API Django thật đạt.
+- ASSUMED / Implemented, not verified: contract từ mega prompt trước, chưa đối chiếu serializer hoặc live response.
+- PENDING_VERIFICATION / Pending/Blocked: chưa có schema/credentials/kết nối.
 
-```env
-VITE_API_BASE_URL=http://192.168.1.93:8000/api/v1
-```
+Backend source, docs/API_CONTRACT.md, openapi.json và tài liệu audit Backend không có trong checkout. Không lấy số 43 tests của Backend làm kết quả kiểm thử của frontend.
 
-For a Backend running on the same computer, `http://localhost:8000/api/v1` is valid. Restart Vite after changing `.env`.
+## Mapping hiện dùng (prefix /api/v1 có trong base URL)
 
-## Auth adapters
-
-| Feature | Method | Path | Request | Status |
+| Feature | Method / relative path | Request | Response adapter | Evidence |
 |---|---|---|---|---|
-| Login | POST | `/auth/login/` | `{ email, password }` | Adapter implemented; response PENDING_VERIFICATION |
-| Register | POST | `/auth/register/` | `{ email, password, first_name, last_name, role: CANDIDATE }` | Adapter implemented; response PENDING_VERIFICATION |
-| Refresh | POST | `/auth/refresh/` | `{ refresh }` | Single-flight adapter; response PENDING_VERIFICATION |
-| Logout | POST | `/auth/logout/` | `{ refresh }` + Bearer access | Adapter implemented; server response PENDING_VERIFICATION |
-| Current user | GET | `/auth/me/` | Bearer access | AuthProvider adapter; response PENDING_VERIFICATION |
+| Login | POST /auth/login/ | email, password JSON | user, access, refresh | ASSUMED user-provided contract; local fixture Verified |
+| Register | POST /auth/register/ | email, password, optional first_name/last_name, role CANDIDATE hoặc EMPLOYER | user, access, refresh (201 expected by user contract) | ASSUMED; local fixture Verified |
+| Me | GET /auth/me/ | Bearer access | direct User with id/email/role; names optional | ASSUMED; local fixture Verified |
+| Refresh | POST /auth/refresh/ | refresh JSON, no Bearer | access + rotated refresh | ASSUMED; single-flight unit tests Verified |
+| Logout | POST /auth/logout/ | Bearer access + refresh JSON | 204, clear local even on failure | ASSUMED; local fixture Verified |
+| Jobs | GET /jobs/ | search, location, page, page_size currently exposed | count/next/previous/results | ASSUMED; strict parser and fixture Verified |
+| Detail | GET /jobs/{id}/ | encoded id | Job object; HTTP 404 -> Next notFound | ASSUMED; fixture Verified |
+| Health | GET /health/ | none | not parsed by production UI | prior user-provided path; LAN not verified |
+| Candidate/Employer/Admin/Companies | — | — | — | PENDING_VERIFICATION, no invented paths |
 
-## Jobs adapters
+Jobs mapping is explicitly provisional in src/api/jobs.ts: id/title required; optional company_name or company string/object.name, location, employment_type, experience_level, salary string, description, tags string[], created_at, requirements, benefits. Unsupported structures fail or omit absent optional fields, not fabricate production data. Pure list arrays are rejected. Unknown fields/enums for jobs must be reconciled with Django OpenAPI; no employment enum guesses sent by filters.
 
-| Feature | Method | Path | Status |
-|---|---|---|---|
-| Jobs list | GET | `/jobs/` | Query adapter implemented; response PENDING_VERIFICATION |
-| Job detail | GET | `/jobs/{id}/` | Adapter implemented; response PENDING_VERIFICATION |
+## Fetch architecture
 
-No Candidate, Employer, or Admin endpoint is implemented without a verified contract.
+Public read: Next server -> config(server env) -> send(no token/no-store) -> runtime parser -> Job components. Auth: browser -> AuthProvider -> auth service/client -> transport. Browser config uses NEXT_PUBLIC_DJANGO_API_BASE_URL, server uses DJANGO_API_BASE_URL. No proxy/parallel Backend. Timeout 8s, cancellation supported, no cross-origin path injection, no credentials/cookies. Errors distinguish configuration/network/timeout/http/contract; raw HTML/server trace hidden; field validation maps into forms.
+
+## Session policy
+
+sessionStorage token bundle scoped to tab; refresh promise single-flight within tab, late 401 reuses rotated token. Local logout increments revision before request, preventing late refresh/login resurrecting session. Network failure never means expired token. Old localStorage tokens removed requiring re-login. XSS remains a risk; no token/password/user PII logging. Sensitive pages client-guarded and private data fetched with Bearer; backend permission enforcement remains mandatory.
